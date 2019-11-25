@@ -11,7 +11,7 @@ bit_vector::bit_vector() {
 
 bit_vector::bit_vector(uint64_t bits) {
     vector<bool> bvec(bits);
-    for(int i=0;i<bits;i++){
+    for(size_t i=0;i<bits;i++){
         bvec[i]=0;
     }
     bitVector=bvec;
@@ -19,7 +19,7 @@ bit_vector::bit_vector(uint64_t bits) {
 
 bit_vector::bit_vector(string bstring) {
     vector<bool> bvec(bstring.size());
-    for(int i=0;i<bstring.size();i++){
+    for(size_t i=0;i<bstring.size();i++){
         bvec[i]= bstring[i]=='1'? 1:0;
     }
     bitVector=bvec;

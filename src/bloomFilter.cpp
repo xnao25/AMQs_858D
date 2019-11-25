@@ -6,8 +6,8 @@
 #include <fstream>
 #include <math.h>
 #include <array>
-#include "APIs/smhasher/src/MurmurHash3.h"
-//#include "APIs/smhasher/src/MurmurHash3.cpp"
+#include "APIs/smhasher/src/MurmurHash1.h"
+#include "APIs/smhasher/src/MurmurHash1.cpp"
 
 
 bloomFilter::bloomFilter() {
@@ -19,16 +19,16 @@ bloomFilter::bloomFilter() {
 
 bloomFilter::bloomFilter(ifstream &keyfile, double fpr, uint64_t uniKey) {
     //Calculate the size m and hash function number k by fpr
-    size_t m=ceil((-1)*(uniKey*log(fpr))/pow(2,log(2))); //size
+    size_t m=ceil((-1)*(uniKey*log(fpr))/(pow(log(2),2))); //size
     bfsize=m;
-    uint64_t k=ceil(m*log(2)/uniKey); //hash count
+    uint64_t k=floor(m*log(2)/uniKey); //hash count
     hashnum=k;
 
     //cout<<"m:"<<m<<endl;
     //cout<<"k:"<<k<<endl;
 
     //get data from input
-    bit_vector initvec(m);
+    bit_vector initvec(bfsize);
     bfStructure=initvec;
     //generate hash value and bfstructure
     string lineread;
@@ -73,13 +73,18 @@ bloomFilter::~bloomFilter() {
 
 void bloomFilter::insert(string keystring) {
     //generate hash value
-
-    array<uint64_t,2> hashValue;
+    /*
+    array<uint64_t,1> hashValue;
     string * kpointer=&keystring;
     size_t sizekey=keystring.length();
     MurmurHash3_x64_128(kpointer,sizekey,0,hashValue.data());
-    for(int i=0;i<hashnum;i++){
-        uint64_t ntHash=(hashValue[0]+i*hashValue[1])%bfsize;
+     */
+    for(size_t i=0;i<hashnum;i++){
+        //uint64_t ntHash=(hashValue[0]+i*hashValue[1])%bfsize;
+        string * kpointer=&keystring;
+        size_t sizekey=keystring.size()+1;
+        uint64_t hashValue=MurmurHash1(kpointer,sizekey,i);
+        uint64_t ntHash=hashValue%bfsize;
         bfStructure.alterVec(ntHash);
     }
     return;
@@ -97,16 +102,19 @@ void bloomFilter::saveStructure(ofstream &outfile) {
 
 bool bloomFilter::bfQuery(string qstring) {
     vector<bool> real_vec=bfStructure.get_vector();
-    array<uint64_t,2> hashValue;
+    /*
+    array<uint64_t,1> hashValue;
     string * kpointer=&qstring;
     size_t sizekey=qstring.length();
     MurmurHash3_x64_128(kpointer,sizekey,0,hashValue.data());
-    //cout<<qstring<<endl;
-    //cout<<hashValue[0]<<endl;
-    //cout<<hashValue[1]<<endl;
-    for(int i=0;i<hashnum;i++){
-        uint64_t ntHash=(hashValue[0]+i*hashValue[1])%bfsize;
-        //cout<<ntHash<<endl;
+     */
+    for(size_t i=0;i<hashnum;i++){
+        //uint64_t ntHash=(hashValue[0]+i*hashValue[1])%bfsize;
+
+        string * kpointer=&qstring;
+        size_t sizekey=qstring.size()+1;
+        uint64_t hashValue=MurmurHash1(kpointer,sizekey,i);
+        uint64_t ntHash=hashValue%bfsize;
         if(real_vec[ntHash]==0){
             return false;
         }

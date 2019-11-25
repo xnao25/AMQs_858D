@@ -20,8 +20,8 @@ blockedBloomFilter::blockedBloomFilter() {
 blockedBloomFilter::blockedBloomFilter(ifstream &keyfile, double fpr, uint64_t uniKey) {
     fixed_singlevec_size=512;
     //get value b (number of small bf) and k (number of hash functions) m=512
-    size_t m=ceil((-1)*(uniKey*log(fpr))/pow(2,log(2))); //size
-    uint64_t k=ceil(m*log(2)/uniKey);
+    size_t m=ceil((-1)*(uniKey*log(fpr))/pow(log(2),2)); //size
+    uint64_t k=floor(m*log(2)/uniKey);
     uint64_t b=ceil(m/fixed_singlevec_size)>0? ceil(m/512):1;
     hashnum=k;
     vecSize=b;
@@ -72,7 +72,7 @@ blockedBloomFilter::~blockedBloomFilter() {}
 void blockedBloomFilter::insert(string keystring) {
     array<uint64_t,2> hashValue;
     string * kpointer=&keystring;
-    size_t sizekey=keystring.length();
+    size_t sizekey=keystring.size()+1;
     MurmurHash3_x64_128(kpointer,sizekey,0,hashValue.data());
     uint64_t bbf_idx;
     for(int i=0;i<hashnum;i++){
@@ -103,7 +103,7 @@ void blockedBloomFilter::saveStructure(ofstream &outfile) {
 bool blockedBloomFilter::bfQuery(string qstring) {
     array<uint64_t,2> hashValue;
     string * kpointer=&qstring;
-    size_t sizekey=qstring.length();
+    size_t sizekey=qstring.size()+1;
     MurmurHash3_x64_128(kpointer,sizekey,0,hashValue.data());
     uint64_t bbf_idx;
 
