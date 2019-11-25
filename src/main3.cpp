@@ -5,8 +5,6 @@
 #include <iostream>
 #include <string>
 #include "bloomFilter.h"
-//#include "blockedBloomFilter.h"
-#include "APIs/smhasher/src/MurmurHash3.h"
 #include <array>
 #include <fstream>
 #include <map>
