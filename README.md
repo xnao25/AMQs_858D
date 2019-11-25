@@ -6,6 +6,7 @@ Bloom Filter and Blocked Bloom Filter implementations. (Assignment#2 for CMSC858
 
 ## Overview
 - This repository contains 2 major programs: Bloom Filter and Blocked Bloom Filter. More information about installation and usage can be found below.
+- The hash function used in bloom filter and blocked bloom filter are from [MurmurHash](https://github.com/aappleby/smhasher)
 ----------------------------
 
 ## Install
